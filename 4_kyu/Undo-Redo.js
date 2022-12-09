@@ -1,10 +1,60 @@
+function undoRedo(object) {
+  let stateUndo = false;
+  let stateRedo = false;
+  const newObj = [JSON.stringify(object)];
+  const lastUndo = [];
+
+  return {
+    set: function (key, value) {
+      object[key] = value;
+      stateUndo = true;
+      stateRedo = false;
+      newObj.push(JSON.stringify(object));
+      console.log(...newObj);
+    },
+    get: function (key) {
+      return object[key];
+    },
+    del: function (key) {
+      if (object[key]) {
+        stateUndo = true;
+        stateRedo = false;
+        delete object[key];
+        newObj.push(JSON.stringify(object));
+      }
+    },
+    undo: function () {
+      if (newObj.length && stateUndo) {
+        stateRedo = true;
+        lastUndo.push(newObj.pop());
+        object = JSON.parse(newObj[newObj.length - 1]);
+        console.log('undo', lastUndo);
+      } else {
+        throw new Error('It should have thrown an exception');
+      }
+    },
+    redo: function () {
+      if (lastUndo.length && stateRedo) {
+        newObj.push(lastUndo[lastUndo.length - 1]);
+        object = JSON.parse(lastUndo.pop());
+        // stateRedo = lastUndo.length ? true : false;
+        console.log('newObj ', newObj);
+        console.log('undo', lastUndo);
+
+      } else {
+        throw new Error('It should have thrown an exception');
+      }
+    }
+  };
+}
+
 let obj = {
   x: 1,
   y: 2
 };
 
 
-function undoRedo(object) {
+function undoRedoo(object) {
   //var storage = object;
   var actions = [];  // keep track of action performed
   // action schema -> { name, params, has_undone }
