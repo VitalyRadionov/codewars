@@ -1,60 +1,11 @@
-function undoRedo(object) {
-  let stateUndo = false;
-  let stateRedo = false;
-  const newObj = [JSON.stringify(object)];
-  const lastUndo = [];
-
-  return {
-    set: function (key, value) {
-      object[key] = value;
-      stateUndo = true;
-      stateRedo = false;
-      newObj.push(JSON.stringify(object));
-      console.log(...newObj);
-    },
-    get: function (key) {
-      return object[key];
-    },
-    del: function (key) {
-      if (object[key]) {
-        stateUndo = true;
-        stateRedo = false;
-        delete object[key];
-        newObj.push(JSON.stringify(object));
-      }
-    },
-    undo: function () {
-      if (newObj.length && stateUndo) {
-        stateRedo = true;
-        lastUndo.push(newObj.pop());
-        object = JSON.parse(newObj[newObj.length - 1]);
-        console.log('undo', lastUndo);
-      } else {
-        throw new Error('It should have thrown an exception');
-      }
-    },
-    redo: function () {
-      if (lastUndo.length && stateRedo) {
-        newObj.push(lastUndo[lastUndo.length - 1]);
-        object = JSON.parse(lastUndo.pop());
-        // stateRedo = lastUndo.length ? true : false;
-        console.log('newObj ', newObj);
-        console.log('undo', lastUndo);
-
-      } else {
-        throw new Error('It should have thrown an exception');
-      }
-    }
-  };
-}
-
 let obj = {
   x: 1,
   y: 2
 };
 
+// solution 1
 
-function undoRedoo(object) {
+function undoRedo(object) {
   //var storage = object;
   var actions = [];  // keep track of action performed
   // action schema -> { name, params, has_undone }
@@ -162,6 +113,57 @@ function undoRedoo(object) {
       } else {
         throw new Error('no action to redo');
       }
+    }
+  };
+}
+
+// solution 2
+
+function undoRedo(obj) {
+
+  let undo = [], redo = [];
+
+  return {
+    set(key, value) {
+      obj[key] ? undo.push(['next', key, obj[key], value]) : undo.push(['start', key, value]);
+      obj[key] = value;
+      redo = [];
+    },
+
+    get(key) {
+      return obj[key];
+    },
+
+    del(key) {
+      obj[key] && undo.push(['rem', key, obj[key]]) && delete obj[key] && (redo = []);
+    },
+
+    undo() {
+
+      if (!undo.length) {
+        throw new Error('undo is empty');
+      }
+
+      const last = undo.pop();
+
+      redo.push(last);
+
+      last[0] === 'start' && delete obj[last[1]];
+      (last[0] === 'next' || last[0] === 'rem') && (obj[last[1]] = last[2]);
+    },
+
+    redo() {
+      if (!redo.length) {
+        throw new Error('redo is empty');
+      }
+
+      const last = redo.pop();
+
+      undo.push(last);
+
+      last[0] === 'start' && (obj[last[1]] = last[2]);
+      last[0] === 'next' && (obj[last[1]] = last[3]);
+      last[0] === 'rem' && delete obj[last[1]];
     }
   };
 }
