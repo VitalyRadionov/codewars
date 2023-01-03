@@ -6,6 +6,8 @@ let durationMemo;
 
 console.log(f);
 
+// solution 1
+
 function memo(fn) {
   let memo = {};
   return function (n) {
@@ -14,6 +16,21 @@ function memo(fn) {
     let key = (isObj) ? JSON.stringify(args) : n;
     if (!(key in memo)) {
       memo[key] = (isObj) ? fn(...arguments) : fn(n);
+    }
+    return memo[key];
+  }
+}
+
+// solution 2
+
+function memo(fn) {
+  let memo = {};
+  return function (n) {
+    let isObj = typeof n === 'object';
+    let args = (isObj) ? Array.prototype.slice.call(arguments) : n;
+    let key = (isObj) ? JSON.stringify(args) : n;
+    if (!(key in memo)) {
+      memo[key] = (isObj) ? fn.apply(this, args) : fn(n);
     }
     return memo[key];
   }
