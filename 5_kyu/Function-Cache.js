@@ -1,27 +1,10 @@
 function cache(func) {
-  let state = {
-    arg: [],
-    res: 0,
-  };
+  let state = {};
 
-  console.log(...state.arg);
-
-  return function (...x) {
-
-    if (state.arg.every((element, index) => element === arguments[index])) {
-      console.log('second');
-      // console.log(...x + ' ...x');
-      console.log(state.arg + ' state.arg');
-      console.log(arguments[0] + ' [...arguments]');
-      console.log('foo' === arguments[0]);
-      return state.res;
-    } else {
-      console.log('first');
-      state.arg = [...arguments];
-      state.res = func(...arguments);
-      return func(...arguments);
-    }
-  };
+  return function () {
+    let result = JSON.stringify(arguments);
+    return state[result] = state.hasOwnProperty(result) ? state[result] : func(...arguments);
+  }
 }
 
 var complexFunction = function (arg1, arg2) { return arg1 + ' ' + arg2 };
