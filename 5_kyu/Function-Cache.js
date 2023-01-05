@@ -1,3 +1,4 @@
+// solution 1
 function cache(func) {
   let state = {};
 
@@ -7,8 +8,11 @@ function cache(func) {
   }
 }
 
-var complexFunction = function (arg1, arg2) { return arg1 + ' ' + arg2 };
-var cachedFunction = cache(complexFunction);
+// solution 2
+// const cache = require('lodash/memoize');
+
+let complexFunction = function (arg1, arg2) { return arg1 + ' ' + arg2 };
+let cachedFunction = cache(complexFunction);
 
 console.log(cachedFunction('foo', 'bar')); // complex function should be executed
 console.log(cachedFunction('foo', 'bar')); // complex function should not be invoked again, instead the cached result should be returned
